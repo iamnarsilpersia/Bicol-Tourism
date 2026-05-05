@@ -5,8 +5,20 @@
 @section('content')
 <h1 class="text-3xl font-bold mb-6">Tourist Spots in Bicol</h1>
 
+<div class="bg-white rounded-lg shadow p-4 mb-6">
+    <form action="{{ url('/user/tourist-spots') }}" method="GET">
+        <div class="flex gap-4">
+            <input type="text" name="search" placeholder="Search by name, location, or category..." value="{{ request()->input('search') }}" class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Search</button>
+            @if(request()->input('search'))
+            <a href="{{ url('/user/tourist-spots') }}" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400">Clear</a>
+            @endif
+        </div>
+    </form>
+</div>
+
 <div class="grid md:grid-cols-3 gap-6">
-    @foreach($spots as $spot)
+    @forelse($spots as $spot)
     <div class="bg-white rounded-lg shadow overflow-hidden">
         @if($spot->image)
             <img src="{{ asset('storage/' . $spot->image) }}" class="w-full h-48 object-cover">
@@ -25,10 +37,15 @@
             @endif
         </div>
     </div>
-    @endforeach
+    @empty
+    <div class="col-span-3 text-center py-12">
+        <p class="text-gray-500 text-lg">No tourist spots found matching your search.</p>
+        <a href="{{ url('/user/tourist-spots') }}" class="text-blue-600 hover:text-blue-800 mt-2 inline-block">View all spots</a>
+    </div>
+    @endforelse
 </div>
 
 <div class="mt-6">
-    {{ $spots->links() }}
+    {{ $spots->appends(request()->all())->links() }}
 </div>
 @endsection

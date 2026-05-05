@@ -57,11 +57,23 @@
                     </span>
                 </td>
                 <td class="px-6 py-4">
-                    <?php if($tour->status == 'pending'): ?>
+                    <?php
+                        $paymentMethod = $tour->payment_method ?? 'on_arrival';
+                        $canTakeAction = in_array($paymentMethod, ['on_arrival', 'downpayment']) || $paymentMethod === null;
+                    ?>
+                    <?php if($canTakeAction && ($tour->status == 'pending' || $tour->status == 'reserved')): ?>
                     <form method="POST" action="<?php echo e(route('admin.custom-tours.update-status', $tour->id)); ?>" class="inline">
                         <?php echo csrf_field(); ?>
                         <select name="status" onchange="this.form.submit()" class="border rounded px-2 py-1 text-sm">
                             <option value="pending" <?php echo e($tour->status == 'pending' ? 'selected' : ''); ?>>Pending</option>
+                            <option value="confirmed" <?php echo e($tour->status == 'confirmed' ? 'selected' : ''); ?>>✅ Approve</option>
+                            <option value="cancelled" <?php echo e($tour->status == 'cancelled' ? 'selected' : ''); ?>>❌ Decline</option>
+                        </select>
+                    </form>
+                    <?php elseif($tour->status == 'pending'): ?>
+                    <form method="POST" action="<?php echo e(route('admin.custom-tours.update-status', $tour->id)); ?>" class="inline">
+                        <?php echo csrf_field(); ?>
+                        <select name="status" onchange="this.form.submit()" class="border rounded px-2 py-1 text-sm">
                             <option value="confirmed" <?php echo e($tour->status == 'confirmed' ? 'selected' : ''); ?>>✅ Approve</option>
                             <option value="cancelled" <?php echo e($tour->status == 'cancelled' ? 'selected' : ''); ?>>❌ Decline</option>
                         </select>

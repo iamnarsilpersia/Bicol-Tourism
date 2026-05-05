@@ -10,41 +10,15 @@
 </div>
 
 <div class="container mx-auto px-4 pb-16">
-    <!-- Filter/Search -->
+    <!-- Search -->
     <div class="bg-white rounded-xl shadow-md p-6 mb-8">
-        <div class="grid md:grid-cols-4 gap-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                <select class="w-full border rounded-lg px-4 py-2">
-                    <option value="">All Categories</option>
-                    <option value="volcano">Volcano</option>
-                    <option value="beach">Beach</option>
-                    <option value="historical">Historical</option>
-                    <option value="marine">Marine</option>
-                    <option value="nature">Nature</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                <select class="w-full border rounded-lg px-4 py-2">
-                    <option value="">All Locations</option>
-                    <option value="albay">Albay</option>
-                    <option value="sorsogon">Sorsogon</option>
-                    <option value="camiguin">Camiguin</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Price Range</label>
-                <select class="w-full border rounded-lg px-4 py-2">
-                    <option value="">Any Price</option>
-                    <option value="free">Free</option>
-                    <option value="paid">Paid</option>
-                </select>
-            </div>
-            <div class="flex items-end">
-                <button class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Filter</button>
-            </div>
-        </div>
+        <form action="<?php echo e(route('public.tourist-spots')); ?>" method="GET" class="flex gap-4">
+            <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Search by name, location, category..." class="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Search</button>
+            <?php if(request('search')): ?>
+                <a href="<?php echo e(route('public.tourist-spots')); ?>" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400">Clear</a>
+            <?php endif; ?>
+        </form>
     </div>
 
     <!-- Results -->

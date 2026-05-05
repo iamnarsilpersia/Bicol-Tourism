@@ -19,9 +19,19 @@ class HomeController extends Controller
         return view('welcome', compact('spots', 'packages'));
     }
 
-    public function touristSpots()
+    public function touristSpots(Request $request)
     {
-        $spots = TouristSpot::where('is_active', true)->orderBy('name')->paginate(12);
+        $query = TouristSpot::where('is_active', true);
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('location', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('category', 'like', "%{$search}%");
+            });
+        }
+        $spots = $query->orderBy('name')->paginate(12)->withQueryString();
         return view('public.tourist-spots', compact('spots'));
     }
 

@@ -28,7 +28,7 @@
                 </div>
                 <div>
                     <label class="block text-gray-700 font-medium mb-2">Tour Date</label>
-                    <input type="date" name="tour_date" required class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    <input type="date" name="tour_date" required min="{{ date('Y-m-d', strtotime('+1 day')) }}" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-gray-700 font-medium mb-2">Number of People</label>
@@ -47,7 +47,7 @@
             <div class="grid md:grid-cols-2 gap-4">
                 @foreach($spots as $spot)
                 <label class="border-2 border-gray-200 p-4 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition">
-                    <input type="checkbox" name="selected_spots[]" value="{{ $spot->id }}" class="mr-3 spot-checkbox" data-fee="{{ $spot->entry_fee ?? 0 }}">
+                    <input type="checkbox" name="selected_spots[]" value="{{ $spot->id }}" class="mr-3 spot-checkbox" data-fee="{{ $spot->entry_fee ?? 0 }}" {{ $preselectedSpot == $spot->id ? 'checked' : '' }}>
                     <div class="inline-block">
                         <span class="font-bold text-gray-800">{{ $spot->name }}</span>
                         <span class="text-gray-500 text-sm block">{{ $spot->location }}</span>
@@ -264,6 +264,27 @@
     
     // Initialize
     togglePaymentMode();
+    
+    // Auto-select preselected spot if any
+    @if($preselectedSpot)
+    var preselectedSpotId = {{ $preselectedSpot }};
+    @else
+    var preselectedSpotId = null;
+    @endif
 </script>
 @endpush
+
+@if($preselectedSpot)
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var checkbox = document.querySelector('.spot-checkbox[value="{{ $preselectedSpot }}"]');
+    if (checkbox) {
+        checkbox.closest('label').classList.add('border-blue-500', 'bg-blue-50');
+        calculateTotal();
+    }
+});
+</script>
+@endpush
+@endif
 @endsection

@@ -10,11 +10,12 @@ use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
-    public function createTour()
+    public function createTour(Request $request)
     {
         $spots = TouristSpot::where('is_active', true)->get();
         $restaurants = Restaurant::where('is_active', true)->get();
-        return view('public.create-tour', compact('spots', 'restaurants'));
+        $preselectedSpot = $request->spot_id ? $request->spot_id : null;
+        return view('public.create-tour', compact('spots', 'restaurants', 'preselectedSpot'));
     }
 
     public function storeTour(Request $request)
@@ -49,7 +50,7 @@ class BookingController extends Controller
             $status = 'confirmed';
             $downpaymentAmount = $totalPrice;
         } elseif ($request->payment_method === 'downpayment') {
-            $downpaymentAmount = $totalPrice * 0.30; // 30% downpayment
+            $downpaymentAmount = $totalPrice * 0.30;
             $paymentStatus = 'partial';
             $status = 'reserved';
         } elseif ($request->payment_method === 'on_arrival') {

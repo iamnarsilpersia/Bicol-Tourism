@@ -41,6 +41,24 @@
                 </span>
             </div>
             <p class="text-sm text-gray-600"><?php echo e($reservation->reservation_date->format('M d, Y')); ?> - <?php echo e($reservation->number_of_people); ?> people</p>
+            <p class="text-sm">
+                <span class="font-bold">₱<?php echo e(number_format($reservation->total_price, 2)); ?></span>
+                <?php if($reservation->payment_method == 'full'): ?>
+                    <span class="ml-2 text-green-600">| Full Payment via <?php echo e(strtoupper($reservation->payment_mode)); ?></span>
+                <?php elseif($reservation->payment_method == 'downpayment'): ?>
+                    <span class="ml-2 text-yellow-600">| Downpayment: ₱<?php echo e(number_format($reservation->downpayment_amount, 2)); ?></span>
+                <?php else: ?>
+                    <span class="ml-2 text-gray-500">| Pay on Arrival</span>
+                <?php endif; ?>
+                <span class="ml-2 px-2 py-0.5 rounded text-xs
+                    <?php if($reservation->payment_status == 'paid'): ?> bg-green-200 text-green-800
+                    <?php elseif($reservation->payment_status == 'partial'): ?> bg-yellow-200 text-yellow-800
+                    <?php else: ?> bg-gray-200 text-gray-800 <?php endif; ?>">
+                    <?php if($reservation->payment_status == 'paid'): ?> Paid
+                    <?php elseif($reservation->payment_status == 'partial'): ?> Partial
+                    <?php else: ?> Unpaid <?php endif; ?>
+                </span>
+            </p>
             <?php if($reservation->status == 'pending'): ?>
                 <form action="<?php echo e(route('user.reservations.cancel', $reservation->id)); ?>" method="POST" class="mt-2">
                     <?php echo csrf_field(); ?>
@@ -101,7 +119,25 @@
 
             </span>
         </div>
-        <p class="text-sm text-gray-600"><?php echo e($booking->booking_date->format('M d, Y')); ?> - <?php echo e($booking->days); ?> days - ₱<?php echo e(number_format($booking->total_amount, 2)); ?></p>
+        <p class="text-sm text-gray-600"><?php echo e($booking->booking_date->format('M d, Y')); ?> - <?php echo e($booking->days); ?> days</p>
+        <p class="text-sm">
+            <span class="font-bold">₱<?php echo e(number_format($booking->total_amount, 2)); ?></span>
+            <?php if($booking->payment_method == 'full'): ?>
+                <span class="ml-2 text-green-600">| Full Payment via <?php echo e(strtoupper($booking->payment_mode)); ?></span>
+            <?php elseif($booking->payment_method == 'downpayment'): ?>
+                <span class="ml-2 text-yellow-600">| Downpayment: ₱<?php echo e(number_format($booking->downpayment_amount, 2)); ?></span>
+            <?php else: ?>
+                <span class="ml-2 text-gray-500">| Pay on Arrival</span>
+            <?php endif; ?>
+            <span class="ml-2 px-2 py-0.5 rounded text-xs
+                <?php if($booking->payment_status == 'paid'): ?> bg-green-200 text-green-800
+                <?php elseif($booking->payment_status == 'partial'): ?> bg-yellow-200 text-yellow-800
+                <?php else: ?> bg-gray-200 text-gray-800 <?php endif; ?>">
+                <?php if($booking->payment_status == 'paid'): ?> Paid
+                <?php elseif($booking->payment_status == 'partial'): ?> Partial
+                <?php else: ?> Unpaid <?php endif; ?>
+            </span>
+        </p>
         <?php if($booking->status == 'pending'): ?>
             <form action="<?php echo e(route('user.tour-guide-bookings.cancel', $booking->id)); ?>" method="POST" class="mt-2">
                 <?php echo csrf_field(); ?>

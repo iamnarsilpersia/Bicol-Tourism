@@ -31,6 +31,7 @@
                     <a href="{{ route('admin.restaurants') }}" class="hover:text-blue-200 {{ request()->routeIs('admin.restaurants*') ? 'text-yellow-400' : '' }}">Restaurants</a>
                     <a href="{{ route('admin.shops') }}" class="hover:text-blue-200 {{ request()->routeIs('admin.shops*') ? 'text-yellow-400' : '' }}">Shops</a>
                     <a href="{{ route('admin.custom-tours') }}" class="hover:text-blue-200 {{ request()->routeIs('admin.custom-tours*') ? 'text-yellow-400' : '' }}">Bookings</a>
+                    <a href="{{ route('admin.tour-guide-bookings') }}" class="hover:text-blue-200 {{ request()->routeIs('admin.tour-guide-bookings*') ? 'text-yellow-400' : '' }}">Guide Bookings</a>
                     <a href="{{ route('admin.map') }}" class="hover:text-blue-200 {{ request()->routeIs('admin.map*') ? 'text-yellow-400' : '' }}">Map</a>
                 </div>
                 

@@ -29,9 +29,20 @@ class UserController extends Controller
         return view('user.dashboard', compact('myReservations', 'myAppointments', 'myGuideBookings', 'myCustomTours'));
     }
 
-    public function touristSpots()
+    public function touristSpots(Request $request)
     {
-        $spots = TouristSpot::where('is_active', true)->orderBy('name')->paginate(12);
+        $query = TouristSpot::where('is_active', true);
+        
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('location', 'like', '%' . $search . '%')
+                  ->orWhere('category', 'like', '%' . $search . '%');
+            });
+        }
+        
+        $spots = $query->orderBy('name')->paginate(12);
         return view('user.tourist-spots', compact('spots'));
     }
 
@@ -54,10 +65,25 @@ class UserController extends Controller
             'reservation_date' => 'required|date|after:today',
             'number_of_people' => 'required|integer|min:1',
             'special_requests' => 'nullable|string',
+            'payment_method' => 'required|in:full,downpayment,on_arrival',
+            'payment_mode' => 'required_if:payment_method,full,downpayment|nullable|in:gcash,paymaya,landbank,bdo,unionbank,cash',
         ]);
 
         $package = TourPackage::findOrFail($request->tour_package_id);
         $totalPrice = $package->price * $request->number_of_people;
+        $downpaymentAmount = 0;
+        $paymentStatus = 'unpaid';
+        $status = 'pending';
+
+        if ($request->payment_method === 'full') {
+            $paymentStatus = 'paid';
+            $status = 'confirmed';
+            $downpaymentAmount = $totalPrice;
+        } elseif ($request->payment_method === 'downpayment') {
+            $downpaymentAmount = $totalPrice * 0.30;
+            $paymentStatus = 'partial';
+            $status = 'pending';
+        }
 
         Reservation::create([
             'user_id' => Auth::id(),
@@ -66,7 +92,11 @@ class UserController extends Controller
             'number_of_people' => $request->number_of_people,
             'special_requests' => $request->special_requests,
             'total_price' => $totalPrice,
-            'status' => 'pending',
+            'payment_method' => $request->payment_method,
+            'payment_mode' => $request->payment_method === 'on_arrival' ? null : $request->payment_mode,
+            'downpayment_amount' => $downpaymentAmount,
+            'payment_status' => $paymentStatus,
+            'status' => $status,
         ]);
 
         return redirect()->route('user.dashboard')->with('success', 'Reservation submitted successfully!');
@@ -91,10 +121,25 @@ class UserController extends Controller
             'booking_date' => 'required|date|after:today',
             'days' => 'required|integer|min:1',
             'notes' => 'nullable|string',
+            'payment_method' => 'required|in:full,downpayment,on_arrival',
+            'payment_mode' => 'required_if:payment_method,full,downpayment|nullable|in:gcash,paymaya,landbank,bdo,unionbank,cash',
         ]);
 
         $guide = TourGuide::findOrFail($request->tour_guide_id);
         $totalAmount = $guide->daily_rate * $request->days;
+        $downpaymentAmount = 0;
+        $paymentStatus = 'unpaid';
+        $status = 'pending';
+
+        if ($request->payment_method === 'full') {
+            $paymentStatus = 'paid';
+            $status = 'confirmed';
+            $downpaymentAmount = $totalAmount;
+        } elseif ($request->payment_method === 'downpayment') {
+            $downpaymentAmount = $totalAmount * 0.30;
+            $paymentStatus = 'partial';
+            $status = 'pending';
+        }
 
         TourGuideBooking::create([
             'user_id' => Auth::id(),
@@ -102,8 +147,12 @@ class UserController extends Controller
             'booking_date' => $request->booking_date,
             'days' => $request->days,
             'total_amount' => $totalAmount,
-            'status' => 'pending',
+            'status' => $status,
             'notes' => $request->notes,
+            'payment_method' => $request->payment_method,
+            'payment_mode' => $request->payment_method === 'on_arrival' ? null : $request->payment_mode,
+            'downpayment_amount' => $downpaymentAmount,
+            'payment_status' => $paymentStatus,
         ]);
 
         return redirect()->route('user.dashboard')->with('success', 'Tour guide booking submitted successfully!');

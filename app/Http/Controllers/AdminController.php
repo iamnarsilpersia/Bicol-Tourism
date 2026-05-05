@@ -212,7 +212,25 @@ class AdminController extends Controller
     public function updateReservationStatus(Request $request, $id)
     {
         $reservation = Reservation::findOrFail($id);
+        $paymentMethod = $reservation->payment_method ?? 'on_arrival';
+
+        $allowedStatuses = ['pending', 'confirmed', 'cancelled'];
+
+        if (in_array($paymentMethod, ['on_arrival', 'downpayment'])) {
+            $allowedStatuses = ['pending', 'confirmed', 'cancelled'];
+        } else {
+            $allowedStatuses = ['confirmed', 'cancelled'];
+        }
+
+        if (!in_array($request->status, $allowedStatuses)) {
+            return redirect()->back()->with('error', 'Invalid status for this reservation.');
+        }
+
         $reservation->update(['status' => $request->status]);
+
+        if ($request->status === 'cancelled') {
+            $reservation->update(['payment_status' => 'unpaid']);
+        }
 
         return redirect()->back()->with('success', 'Reservation status updated.');
     }
@@ -299,7 +317,25 @@ class AdminController extends Controller
     public function updateTourGuideBookingStatus(Request $request, $id)
     {
         $booking = TourGuideBooking::findOrFail($id);
+        $paymentMethod = $booking->payment_method ?? 'on_arrival';
+
+        $allowedStatuses = ['pending', 'confirmed', 'cancelled'];
+
+        if (in_array($paymentMethod, ['on_arrival', 'downpayment'])) {
+            $allowedStatuses = ['pending', 'confirmed', 'cancelled'];
+        } else {
+            $allowedStatuses = ['confirmed', 'cancelled'];
+        }
+
+        if (!in_array($request->status, $allowedStatuses)) {
+            return redirect()->back()->with('error', 'Invalid status for this booking.');
+        }
+
         $booking->update(['status' => $request->status]);
+
+        if ($request->status === 'cancelled') {
+            $booking->update(['payment_status' => 'unpaid']);
+        }
 
         return redirect()->back()->with('success', 'Booking status updated.');
     }

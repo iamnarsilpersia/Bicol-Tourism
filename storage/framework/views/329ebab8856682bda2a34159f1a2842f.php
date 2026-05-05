@@ -13,8 +13,10 @@
         
         <!-- Search Box -->
         <div class="mt-8 max-w-2xl mx-auto bg-white rounded-full p-2 flex">
-            <input type="text" placeholder="Search tourist spots, hotels, restaurants..." class="flex-1 px-6 py-2 rounded-full text-gray-800 outline-none">
-            <button class="bg-blue-600 text-white px-8 py-2 rounded-full hover:bg-blue-700">Search</button>
+            <form action="<?php echo e(route('public.tourist-spots')); ?>" method="GET" class="flex flex-1">
+                <input type="text" name="search" placeholder="Search tourist spots, hotels, restaurants..." class="flex-1 px-6 py-2 rounded-full text-gray-800 outline-none">
+                <button type="submit" class="bg-blue-600 text-white px-8 py-2 rounded-full hover:bg-blue-700">Search</button>
+            </form>
         </div>
     </div>
 </section>

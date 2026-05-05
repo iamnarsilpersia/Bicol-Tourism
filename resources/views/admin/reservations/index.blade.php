@@ -14,6 +14,7 @@
                 <th class="px-6 py-3 text-left">Package</th>
                 <th class="px-6 py-3 text-left">Date</th>
                 <th class="px-6 py-3 text-left">People</th>
+                <th class="px-6 py-3 text-left">Payment</th>
                 <th class="px-6 py-3 text-left">Total</th>
                 <th class="px-6 py-3 text-left">Status</th>
                 <th class="px-6 py-3 text-left">Actions</th>
@@ -27,6 +28,23 @@
                 <td class="px-6 py-4">{{ $reservation->tourPackage->name }}</td>
                 <td class="px-6 py-4">{{ $reservation->reservation_date->format('M d, Y') }}</td>
                 <td class="px-6 py-4">{{ $reservation->number_of_people }}</td>
+                <td class="px-6 py-4">
+                    <div class="text-xs">
+                        <span class="@if($reservation->payment_method == 'full') text-green-600 @elseif($reservation->payment_method == 'downpayment') text-yellow-600 @else text-gray-600 @endif">
+                            @if($reservation->payment_method == 'full') Full Payment
+                            @elseif($reservation->payment_method == 'downpayment') Downpayment
+                            @else Pay on Arrival @endif
+                        </span>
+                        @if($reservation->payment_mode)
+                        <span class="block text-gray-500">{{ strtoupper($reservation->payment_mode) }}</span>
+                        @endif
+                        <span class="block @if($reservation->payment_status == 'paid') text-green-500 @elseif($reservation->payment_status == 'partial') text-yellow-500 @else text-red-500 @endif">
+                            @if($reservation->payment_status == 'paid') Paid
+                            @elseif($reservation->payment_status == 'partial') Partial (₱{{ number_format($reservation->downpayment_amount, 2) }})
+                            @else Unpaid @endif
+                        </span>
+                    </div>
+                </td>
                 <td class="px-6 py-4">₱{{ number_format($reservation->total_price, 2) }}</td>
                 <td class="px-6 py-4">
                     <span class="px-2 py-1 rounded text-sm 
@@ -38,15 +56,30 @@
                     </span>
                 </td>
                 <td class="px-6 py-4">
-                    <form action="{{ route('admin.reservations.update-status', $reservation->id) }}" method="POST" class="inline">
-                        @csrf
-                        <select name="status" onchange="this.form.submit()" class="text-sm border rounded px-2 py-1">
-                            <option value="pending" {{ $reservation->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="confirmed" {{ $reservation->status == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
-                            <option value="completed" {{ $reservation->status == 'completed' ? 'selected' : '' }}>Completed</option>
-                            <option value="cancelled" {{ $reservation->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                        </select>
-                    </form>
+                    @php
+                        $paymentMethod = $reservation->payment_method ?? 'on_arrival';
+                        $canTakeAction = in_array($paymentMethod, ['on_arrival', 'downpayment']) || $paymentMethod === null;
+                    @endphp
+                    @if($canTakeAction && ($reservation->status == 'pending' || $reservation->status == 'confirmed'))
+                        <form action="{{ route('admin.reservations.update-status', $reservation->id) }}" method="POST" class="inline">
+                            @csrf
+                            <select name="status" onchange="this.form.submit()" class="text-sm border rounded px-2 py-1">
+                                <option value="pending" {{ $reservation->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="confirmed" {{ $reservation->status == 'confirmed' ? 'selected' : '' }}>Approve</option>
+                                <option value="cancelled" {{ $reservation->status == 'cancelled' ? 'selected' : '' }}>Decline</option>
+                            </select>
+                        </form>
+                    @elseif($reservation->status == 'pending')
+                        <form action="{{ route('admin.reservations.update-status', $reservation->id) }}" method="POST" class="inline">
+                            @csrf
+                            <select name="status" onchange="this.form.submit()" class="text-sm border rounded px-2 py-1">
+                                <option value="confirmed" {{ $reservation->status == 'confirmed' ? 'selected' : '' }}>Approve</option>
+                                <option value="cancelled" {{ $reservation->status == 'cancelled' ? 'selected' : '' }}>Decline</option>
+                            </select>
+                        </form>
+                    @else
+                        <span class="text-gray-500">-</span>
+                    @endif
                 </td>
             </tr>
             @endforeach

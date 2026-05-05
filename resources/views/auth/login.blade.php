@@ -62,13 +62,6 @@
                 </p>
             </div>
         </div>
-
-        <!-- Demo Accounts -->
-        <div class="mt-6 bg-blue-50 rounded-xl p-4">
-            <p class="text-sm text-blue-800 font-medium mb-2">Demo Accounts:</p>
-            <p class="text-sm text-blue-600">Admin: admin@bicoltourism.com / password</p>
-            <p class="text-sm text-blue-600">User: user@bicoltourism.com / password</p>
-        </div>
     </div>
 </div>
 @endsection

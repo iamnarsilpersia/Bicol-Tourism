@@ -22,16 +22,17 @@
                     </div>
                     <a href="<?php echo e(route('user.dashboard')); ?>" class="text-xl font-bold">Bicol Tourism</a>
                 </div>
-                
+
                 <div class="hidden md:flex items-center space-x-6">
+                    <a href="/" class="hover:text-blue-200">Home</a>
                     <a href="<?php echo e(route('user.dashboard')); ?>" class="hover:text-blue-200">Dashboard</a>
-                    <a href="<?php echo e(route('user.tourist-spots')); ?>" class="hover:text-blue-200">Tourist Spots</a>
+                    <a href="<?php echo e(route('user.tourist-spots')); ?>" class="hover:text-blue-200">Tourist Spot</a>
                     <a href="<?php echo e(route('user.tour-packages')); ?>" class="hover:text-blue-200">Tour Packages</a>
                     <a href="<?php echo e(route('user.map')); ?>" class="hover:text-blue-200">Map</a>
                     <a href="<?php echo e(route('public.book-tour')); ?>" class="hover:text-blue-200">Book Tour</a>
-                    <a href="<?php echo e(route('user.nearby-places-form')); ?>" class="hover:text-blue-200">Nearby</a>
+                    <a href="<?php echo e(route('user.nearby-places')); ?>" class="hover:text-blue-200">Nearby</a>
                 </div>
-                
+
                 <div class="flex items-center space-x-4">
                     <div class="flex items-center space-x-2">
                         <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
@@ -39,6 +40,7 @@
                         </div>
                         <span><?php echo e(Auth::user()->name); ?></span>
                     </div>
+                    <a href="<?php echo e(route('user.dashboard')); ?>" class="hover:text-blue-200 text-sm">Account</a>
                     <form method="POST" action="<?php echo e(route('logout')); ?>" class="inline">
                         <?php echo csrf_field(); ?>
                         <button type="submit" class="hover:text-blue-200 text-sm">Logout</button>

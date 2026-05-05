@@ -109,7 +109,7 @@
                         🗺️ View on Map
                     </a>
                     @auth
-                    <a href="{{ route('public.book-tour') }}" class="bg-green-600 text-white text-center px-4 py-3 rounded-lg hover:bg-green-700 font-medium">
+                    <a href="{{ route('public.book-tour', ['spot_id' => $spot->id]) }}" class="bg-green-600 text-white text-center px-4 py-3 rounded-lg hover:bg-green-700 font-medium">
                         🎫 Book This Spot
                     </a>
                     @else

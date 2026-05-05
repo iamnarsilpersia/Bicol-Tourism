@@ -17,12 +17,17 @@ class Reservation extends Model
         'status',
         'special_requests',
         'total_price',
+        'payment_method',
+        'payment_mode',
+        'downpayment_amount',
+        'payment_status',
     ];
 
     protected $casts = [
         'reservation_date' => 'date',
         'total_price' => 'decimal:2',
         'number_of_people' => 'integer',
+        'downpayment_amount' => 'decimal:2',
     ];
 
     public function user()

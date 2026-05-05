@@ -26,7 +26,7 @@
                 </div>
                 <div>
                     <label class="block text-gray-700 font-medium mb-2">Tour Date</label>
-                    <input type="date" name="tour_date" required class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    <input type="date" name="tour_date" required min="<?php echo e(date('Y-m-d', strtotime('+1 day'))); ?>" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-gray-700 font-medium mb-2">Number of People</label>
@@ -45,7 +45,7 @@
             <div class="grid md:grid-cols-2 gap-4">
                 <?php $__currentLoopData = $spots; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $spot): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <label class="border-2 border-gray-200 p-4 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition">
-                    <input type="checkbox" name="selected_spots[]" value="<?php echo e($spot->id); ?>" class="mr-3 spot-checkbox" data-fee="<?php echo e($spot->entry_fee ?? 0); ?>">
+                    <input type="checkbox" name="selected_spots[]" value="<?php echo e($spot->id); ?>" class="mr-3 spot-checkbox" data-fee="<?php echo e($spot->entry_fee ?? 0); ?>" <?php echo e($preselectedSpot == $spot->id ? 'checked' : ''); ?>>
                     <div class="inline-block">
                         <span class="font-bold text-gray-800"><?php echo e($spot->name); ?></span>
                         <span class="text-gray-500 text-sm block"><?php echo e($spot->location); ?></span>
@@ -262,7 +262,28 @@
     
     // Initialize
     togglePaymentMode();
+    
+    // Auto-select preselected spot if any
+    <?php if($preselectedSpot): ?>
+    var preselectedSpotId = <?php echo e($preselectedSpot); ?>;
+    <?php else: ?>
+    var preselectedSpotId = null;
+    <?php endif; ?>
 </script>
 <?php $__env->stopPush(); ?>
+
+<?php if($preselectedSpot): ?>
+<?php $__env->startPush('scripts'); ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var checkbox = document.querySelector('.spot-checkbox[value="<?php echo e($preselectedSpot); ?>"]');
+    if (checkbox) {
+        checkbox.closest('label').classList.add('border-blue-500', 'bg-blue-50');
+        calculateTotal();
+    }
+});
+</script>
+<?php $__env->stopPush(); ?>
+<?php endif; ?>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\iamna\bicol-tourism\resources\views/public/create-tour.blade.php ENDPATH**/ ?>

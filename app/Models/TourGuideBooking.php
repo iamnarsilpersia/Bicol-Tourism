@@ -17,12 +17,17 @@ class TourGuideBooking extends Model
         'total_amount',
         'status',
         'notes',
+        'payment_method',
+        'payment_mode',
+        'downpayment_amount',
+        'payment_status',
     ];
 
     protected $casts = [
         'booking_date' => 'date',
         'total_amount' => 'decimal:2',
         'days' => 'integer',
+        'downpayment_amount' => 'decimal:2',
     ];
 
     public function user()

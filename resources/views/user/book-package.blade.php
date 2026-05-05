@@ -51,9 +51,45 @@
             <label class="block text-gray-700 mb-2">Special Requests (Optional)</label>
             <textarea name="special_requests" rows="3" class="w-full px-4 py-2 border rounded-lg"></textarea>
         </div>
-        
+
+        <h2 class="text-xl font-bold mb-4 mt-6">Payment Method</h2>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 mb-2">Select Payment Option</label>
+            <div class="space-y-2">
+                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                    <input type="radio" name="payment_method" value="downpayment" required class="mr-3">
+                    <div>
+                        <span class="font-semibold">Downpayment (30%)</span>
+                        <p class="text-sm text-gray-500">Pay 30% now, balance on arrival</p>
+                    </div>
+                </label>
+                <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                    <input type="radio" name="payment_method" value="on_arrival" class="mr-3">
+                    <div>
+                        <span class="font-semibold">Pay on Arrival</span>
+                        <p class="text-sm text-gray-500">Pay full amount when you arrive</p>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div id="payment-mode-section" class="mb-4 hidden">
+            <label class="block text-gray-700 mb-2">Payment Mode</label>
+            <select name="payment_mode" class="w-full px-4 py-2 border rounded-lg">
+                <option value="">Select Payment Mode</option>
+                <option value="gcash">GCash</option>
+                <option value="paymaya">PayMaya</option>
+                <option value="landbank">Landbank</option>
+                <option value="bdo">BDO</option>
+                <option value="unionbank">UnionBank</option>
+                <option value="cash">Cash</option>
+            </select>
+        </div>
+
         <div class="bg-blue-50 p-4 rounded-lg mb-6">
             <p class="text-lg">Total Price: <span class="font-bold text-blue-800">₱{{ number_format($package->price, 2) }} x <span id="people-count">1</span> = ₱<span id="total-price">{{ number_format($package->price, 2) }}</span></span></p>
+            <p class="text-sm text-gray-600 mt-2" id="downpayment-info"></p>
         </div>
         
         <button type="submit" class="w-full bg-blue-800 text-white py-3 rounded-lg hover:bg-blue-900 font-bold">Confirm Reservation</button>
@@ -61,11 +97,33 @@
 </div>
 
 <script>
-document.querySelector('input[name="number_of_people"]').addEventListener('input', function() {
-    const price = {{ $package->price }};
-    const people = this.value || 1;
+const price = {{ $package->price }};
+const peopleInput = document.querySelector('input[name="number_of_people"]');
+const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
+const paymentModeSection = document.getElementById('payment-mode-section');
+const downpaymentInfo = document.getElementById('downpayment-info');
+
+function updatePrice() {
+    const people = peopleInput.value || 1;
     document.getElementById('people-count').textContent = people;
     document.getElementById('total-price').textContent = (price * people).toLocaleString('en-PH', {minimumFractionDigits: 2});
+    downpaymentInfo.textContent = 'Downpayment: ₱' + (price * people * 0.30).toLocaleString('en-PH', {minimumFractionDigits: 2});
+}
+
+peopleInput.addEventListener('input', updatePrice);
+
+paymentRadios.forEach(radio => {
+    radio.addEventListener('change', function() {
+        if (this.value === 'downpayment') {
+            paymentModeSection.classList.remove('hidden');
+            downpaymentInfo.classList.remove('hidden');
+        } else {
+            paymentModeSection.classList.add('hidden');
+            downpaymentInfo.classList.add('hidden');
+        }
+    });
 });
+
+updatePrice();
 </script>
 @endsection

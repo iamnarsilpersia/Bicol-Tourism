@@ -59,11 +59,23 @@
                     </span>
                 </td>
                 <td class="px-6 py-4">
-                    @if($tour->status == 'pending')
+                    @php
+                        $paymentMethod = $tour->payment_method ?? 'on_arrival';
+                        $canTakeAction = in_array($paymentMethod, ['on_arrival', 'downpayment']) || $paymentMethod === null;
+                    @endphp
+                    @if($canTakeAction && ($tour->status == 'pending' || $tour->status == 'reserved'))
                     <form method="POST" action="{{ route('admin.custom-tours.update-status', $tour->id) }}" class="inline">
                         @csrf
                         <select name="status" onchange="this.form.submit()" class="border rounded px-2 py-1 text-sm">
                             <option value="pending" {{ $tour->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="confirmed" {{ $tour->status == 'confirmed' ? 'selected' : '' }}>✅ Approve</option>
+                            <option value="cancelled" {{ $tour->status == 'cancelled' ? 'selected' : '' }}>❌ Decline</option>
+                        </select>
+                    </form>
+                    @elseif($tour->status == 'pending')
+                    <form method="POST" action="{{ route('admin.custom-tours.update-status', $tour->id) }}" class="inline">
+                        @csrf
+                        <select name="status" onchange="this.form.submit()" class="border rounded px-2 py-1 text-sm">
                             <option value="confirmed" {{ $tour->status == 'confirmed' ? 'selected' : '' }}>✅ Approve</option>
                             <option value="cancelled" {{ $tour->status == 'cancelled' ? 'selected' : '' }}>❌ Decline</option>
                         </select>
